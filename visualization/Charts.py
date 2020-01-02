@@ -8,7 +8,7 @@ import pandas as pd
 import seaborn as sns
 from pymongo import MongoClient
 
-from analysis.Individual import individual
+from chatlog.analysis.Individual import individual
 
 
 class charts():

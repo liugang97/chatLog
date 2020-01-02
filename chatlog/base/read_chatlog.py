@@ -2,14 +2,14 @@ import re
 
 from pymongo import MongoClient
 
-from base import constant
+from chatlog.base import constant
 
 
 class ReadChatlog(object):
     def __init__(self):
 
         self.client = MongoClient()  # 默认连接 localhost 27017
-        self.db = self.client.chatlog
+        self.db = self.client.chatlogz
         self.post = self.db.vczh  # todo
 
         # 初始化两个常用正则
@@ -40,7 +40,7 @@ class ReadChatlog(object):
         """
         print('----------正在进行数据清洗-------------')
 
-        with open('../run/chatlog.txt', 'r', encoding='utf-8') as chatlog_file:
+        with open('.../chatlog.txt', 'r', encoding='utf-8') as chatlog_file:
 
             chatlog_list = []
             for line in chatlog_file.readlines():
