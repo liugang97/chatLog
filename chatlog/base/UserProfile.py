@@ -1,41 +1,35 @@
-# -*- coding=utf-8 -*-
-'''
+"""
     构建用户基本画像
     @author:DingHanyang
-'''
+"""
 from datetime import datetime
 
 from pymongo import MongoClient
 
 
-class userProfile:
-    def __init__(self):
+class UserProfile:
+    def __init__(self, db_name='chatlog', collection_name='vczh'):
         print("正在初始化用户画像模块")
         self.client = MongoClient()  # 默认连接 localhost 27017
-        self.db = self.client.chatlog
-        self.post = self.db.vczh
+        self.db = self.client['db_name']
+        self.post = self.db['collection_name']
 
-        self.res_list = []
-        # 读出所有数据
-        for doc in self.post.find({}, {'_id': 0}):
-            self.res_list.append(doc)
+        self.res_list = [doc for doc in self.post.find({}, {'_id': 0})]
 
     def close(self):
         self.client.close()
 
-    def get_ID_list(self):
+    def get_user_id_list(self):
         '''
         获取记录中所有ID的列表
         :return:[id1,id2,id3,...]
         '''
-        ID_list = []
-        for li in self.res_list:
-            ID_list.append(li['ID'])
+        user_id_list = [li['ID'] for li in self.res_list]
 
-        ID_list = list(set(ID_list))
-        print('记录中共有', len(ID_list), '位聚聚发过言')
+        user_id_list = list(set(user_id_list))
+        print('记录中共有', len(user_id_list), '位聚聚发过言')
 
-        return ID_list
+        return user_id_list
 
     def get_all_name(self, ID):
         '''
@@ -80,7 +74,6 @@ class userProfile:
 
         week = [[0 for i in range(24)] for i in range(7)]
 
-
         for li in time_list:
             week[int(datetime.strptime(li, "%Y-%m-%d %H:%M:%S").weekday())][int(li[11:13])] += 1
 
@@ -100,16 +93,16 @@ class userProfile:
         :return:None
         """
         post = self.db.profile
-        ID_list = self.get_ID_list()
+        ID_list = self.get_user_id_list()
         for li in ID_list:
             print('正在构建用户', li, '的用户画像')
             name_list = self.get_all_name(li)
             speak_num, word_num, photo_num = self.get_speak_infos(li)
-            week_online= self.get_online_time(li)
+            week_online = self.get_online_time(li)
             ban_time = self.ban_time(li)
             dict = {'ID': li, 'name_list': name_list, 'speak_num': speak_num,
                     'word_num': word_num, 'photo_num': photo_num,
-                    'week_online': week_online,'ban_time': ban_time}
+                    'week_online': week_online, 'ban_time': ban_time}
             post.insert_one(dict)
         self.close()
 
@@ -145,7 +138,8 @@ class userProfile:
 
         return add_time(time_list)
 
+
 if __name__ == '__main__':
-    userProfile = userProfile()
+    userProfile = UserProfile()
     userProfile.work()
     userProfile.close()

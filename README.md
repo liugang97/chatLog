@@ -1,4 +1,4 @@
-# ChatLog
+# ChatLog(重构中)
 
 通过QQ导出的QQ群聊天记录进行一定的分析。
 
